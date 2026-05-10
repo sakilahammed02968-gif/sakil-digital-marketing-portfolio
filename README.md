@@ -1,38 +1,70 @@
-# Sakil Digital Marketing Portfolio
+# AFF Bird Payroll
 
-A professional, modern, SEO-optimized portfolio website for a digital marketing & SEO expert. The site highlights
-services, case studies, tools, and a conversion-focused contact section in a responsive, accessible layout.
+Dark themed Next.js payroll and lead tracking dashboard for lead workers and admins.
 
-## Project Overview
+## Stack
 
-**Key sections**
-- Hero with headline, CTA, and quick stats
-- About Me (Digital Marketing & SEO Expert)
-- Services overview (SEO, Google Ads, Facebook Ads, Content Marketing, Analytics)
-- SEO Case Studies with sample metrics
-- Tools I Use (GA4, GSC, Ahrefs, SEMrush, Meta Ads, Google Ads)
-- Contact form with messaging
+- Next.js 14 App Router, TypeScript, Tailwind CSS
+- PostgreSQL with Prisma ORM
+- NextAuth credentials authentication
+- Zod validation, Lucide icons, Vitest payroll tests
 
-## Folder Structure
+## Features
 
+- Worker dashboard, My Leads, Submissions, Payroll History, and Settings pages
+- Add Leads modal copy and validation-ready workflow
+- Admin dashboard, submissions, employee management, and payroll preview pages
+- Prisma schema for users, lead submissions, payroll runs, and audit logs
+- Seed script with admin and worker (`MD. SAZEDUL ISLAM`, `sakilahammed02968@gmail.com`)
+- Tiered payroll calculation utility with tests
+
+## Setup
+
+1. Install dependencies:
+
+```bash
+npm install
 ```
-.
-├── assets
-│   ├── css
-│   │   └── style.css
-│   ├── images
-│   └── js
-│       └── main.js
-└── index.html
+
+2. Copy environment variables:
+
+```bash
+cp .env.example .env
 ```
 
-## Getting Started
+3. Update `DATABASE_URL` to point at PostgreSQL, then run migrations and seed:
 
-1. Open `index.html` in your browser.
-2. Customize text, links, and branding as needed.
+```bash
+npx prisma migrate dev --name init
+npm run prisma:seed
+```
 
-## Development Notes
+4. Start the development server:
 
-- Built with clean HTML, CSS, and vanilla JavaScript.
-- SEO-friendly metadata and heading hierarchy included in `index.html`.
-- Mobile responsive layout with accessible navigation.
+```bash
+npm run dev
+```
+
+Default seeded credentials:
+
+- Admin: `admin@affbird.test` / `admin12345`
+- Worker: `sakilahammed02968@gmail.com` / `worker12345`
+
+## Quality checks
+
+```bash
+npm run lint
+npm run typecheck
+npm run test
+```
+
+## Payroll rules
+
+The approved monthly lead count determines the single lead rate for all approved leads that month. Formula:
+
+```text
+leadCommission = approvedLeadCount * leadRate
+gross = baseSalary + leadCommission
+pension = gross * 0.05
+netPayable = gross - pension - simCost
+```

@@ -1,0 +1,5 @@
+import { cn } from "@/lib/utils";
+export function Card({ className, children }: { className?: string; children: React.ReactNode }) { return <section className={cn("rounded-2xl border border-slate-800 bg-navy-900/85 p-5 shadow-xl shadow-black/10", className)}>{children}</section>; }
+export function Button({ className, children, type = "button", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) { return <button type={type} className={cn("rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-500 disabled:opacity-50", className)} {...props}>{children}</button>; }
+export function Input(props: React.InputHTMLAttributes<HTMLInputElement>) { return <input {...props} className={cn("w-full rounded-xl border border-slate-700 bg-navy-950 px-3 py-2 text-sm outline-none focus:border-blue-500", props.className)} />; }
+export function Select(props: React.SelectHTMLAttributes<HTMLSelectElement>) { return <select {...props} className={cn("w-full rounded-xl border border-slate-700 bg-navy-950 px-3 py-2 text-sm outline-none focus:border-blue-500", props.className)} />; }

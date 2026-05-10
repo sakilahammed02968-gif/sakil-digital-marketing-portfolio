@@ -1,0 +1,79 @@
+generator client { provider = "prisma-client-js" }
+datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+
+enum Role { WORKER ADMIN }
+enum LeadSource { CRAIGSLIST FACEBOOK }
+enum SubmissionStatus { PENDING APPROVED REJECTED }
+enum PayrollStatus { FINALIZED PAID }
+
+model User {
+  id String @id @default(cuid())
+  name String
+  email String @unique
+  passwordHash String
+  role Role @default(WORKER)
+  baseSalary Decimal @default(9000) @db.Decimal(12, 2)
+  simCost Decimal @default(0) @db.Decimal(12, 2)
+  isActive Boolean @default(true)
+  leadSubmissions LeadSubmission[] @relation("WorkerSubmissions")
+  approvedSubmissions LeadSubmission[] @relation("ApproverSubmissions")
+  payrollRuns PayrollRun[] @relation("WorkerPayrollRuns")
+  finalizedPayrollRuns PayrollRun[] @relation("FinalizerPayrollRuns")
+  auditLogs AuditLog[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model LeadSubmission {
+  id String @id @default(cuid())
+  workerId String
+  worker User @relation("WorkerSubmissions", fields: [workerId], references: [id])
+  source LeadSource
+  date DateTime @db.Date
+  monthKey String
+  leadCount Int
+  status SubmissionStatus @default(PENDING)
+  rejectionReason String?
+  submittedAt DateTime @default(now())
+  approvedAt DateTime?
+  approvedById String?
+  approvedBy User? @relation("ApproverSubmissions", fields: [approvedById], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([workerId, monthKey])
+  @@index([status])
+}
+
+model PayrollRun {
+  id String @id @default(cuid())
+  workerId String
+  worker User @relation("WorkerPayrollRuns", fields: [workerId], references: [id])
+  monthKey String
+  baseSalary Decimal @db.Decimal(12, 2)
+  approvedLeadCount Int
+  leadRate Decimal @db.Decimal(12, 2)
+  leadCommission Decimal @db.Decimal(12, 2)
+  gross Decimal @db.Decimal(12, 2)
+  pension Decimal @db.Decimal(12, 2)
+  simCost Decimal @db.Decimal(12, 2)
+  netPayable Decimal @db.Decimal(12, 2)
+  status PayrollStatus @default(FINALIZED)
+  finalizedById String
+  finalizedBy User @relation("FinalizerPayrollRuns", fields: [finalizedById], references: [id])
+  finalizedAt DateTime @default(now())
+  paidAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@unique([workerId, monthKey])
+}
+
+model AuditLog {
+  id String @id @default(cuid())
+  actorId String
+  actor User @relation(fields: [actorId], references: [id])
+  action String
+  entityType String
+  entityId String
+  metadata Json?
+  createdAt DateTime @default(now())
+}
