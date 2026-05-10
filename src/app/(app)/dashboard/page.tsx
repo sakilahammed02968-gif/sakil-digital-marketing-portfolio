@@ -1,0 +1,8 @@
+import { AddLeadsModal } from "@/components/AddLeadsModal";
+import { PayrollBreakdown } from "@/components/PayrollBreakdown";
+import { StatCard } from "@/components/StatCard";
+import { Button, Card } from "@/components/ui";
+import { calculatePayroll, formatBDT, getNextTier } from "@/lib/payroll";
+import { demoUser, firstName } from "@/lib/utils";
+const projectedLeads = 0;
+export default function DashboardPage() { const payroll = calculatePayroll({ approvedLeadCount: projectedLeads, baseSalary: demoUser.baseSalary, simCost: demoUser.simCost }); const next = getNextTier(projectedLeads); const toNext = next ? next.min - projectedLeads : 0; return <div className="space-y-6"><div className="flex flex-wrap items-center justify-between gap-4"><div><h1 className="text-3xl font-bold">Hi, {firstName(demoUser.name)}.</h1><p className="text-slate-400">Your lead snapshot for May 2026.</p></div><AddLeadsModal /></div><div className="grid gap-4 md:grid-cols-4"><StatCard label="Total leads MTD" value="0" hint="Approved + pending projected"/><StatCard label="Projected earnings" value={formatBDT(payroll.leadCommission)} /><StatCard label="To next tier" value={`${toNext} leads`} /><StatCard label="Projected net payout" value={formatBDT(payroll.netPayable)} /></div><div className="grid gap-6 lg:grid-cols-2"><Card><p className="text-xl font-semibold">Bring in {toNext} more leads to unlock the next tier</p><p className="mt-3 text-slate-400">Next tier can raise your monthly lead rate and add extra earning amount as approvals come in.</p><div className="mt-5"><Button>Add leads</Button></div></Card><PayrollBreakdown leads={projectedLeads} baseSalary={demoUser.baseSalary} simCost={demoUser.simCost}/></div></div>; }
