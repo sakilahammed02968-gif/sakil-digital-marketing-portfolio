@@ -1,4 +1,21 @@
 "use client";
 import { useState } from "react";
+import { addLeadSubmission } from "@/lib/actions";
 import { Button, Card, Input, Select } from "@/components/ui";
-export function AddLeadsModal() { const [open, setOpen] = useState(false); return <><Button onClick={() => setOpen(true)}>Add leads</Button>{open ? <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4"><Card className="w-full max-w-md"><h2 className="text-xl font-bold">Add leads</h2><p className="mt-2 whitespace-pre-line text-sm text-slate-400">Choose the source, the calendar day, and how many leads.{"\n"}Same day + source updates your pending row until admin approves.</p><form className="mt-5 space-y-4"><label className="block text-sm">Source<Select name="source" className="mt-2"><option>Craigslist</option><option>Facebook</option></Select></label><label className="block text-sm">Calendar day<Input name="date" type="date" className="mt-2" /></label><label className="block text-sm">Number of leads<Input name="leadCount" type="number" min={1} placeholder="25" className="mt-2" /></label><div className="flex justify-end gap-3"><Button className="bg-slate-700 hover:bg-slate-600" onClick={() => setOpen(false)}>Cancel</Button><Button type="submit">Submit for approval</Button></div></form></Card></div> : null}</>; }
+
+export function AddLeadsModal() {
+  const [open, setOpen] = useState(false);
+  return <>
+    <Button onClick={() => setOpen(true)}>Add leads</Button>
+    {open ? <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-4">
+      <Card className="w-full max-w-md"><h2 className="text-xl font-bold">Add leads</h2><p className="mt-2 whitespace-pre-line text-sm text-slate-400">Choose the source, the calendar day, and how many leads.{"\n"}Same day + source updates your pending row until admin approves.</p>
+        <form action={async (formData) => { await addLeadSubmission(formData); setOpen(false); }} className="mt-5 space-y-4">
+          <label className="block text-sm">Source<Select name="source" className="mt-2"><option value="CRAIGSLIST">Craigslist</option><option value="FACEBOOK">Facebook</option></Select></label>
+          <label className="block text-sm">Calendar day<Input name="date" type="date" defaultValue="2026-05-10" className="mt-2" /></label>
+          <label className="block text-sm">Number of leads<Input name="leadCount" type="number" min={1} placeholder="25" className="mt-2" /></label>
+          <div className="flex justify-end gap-3"><Button className="bg-slate-700 hover:bg-slate-600" onClick={() => setOpen(false)}>Cancel</Button><Button type="submit">Submit for approval</Button></div>
+        </form>
+      </Card>
+    </div> : null}
+  </>;
+}

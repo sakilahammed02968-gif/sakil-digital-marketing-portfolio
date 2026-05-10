@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "dev:demo": "AFF_BIRD_DEMO_MODE=true next dev",
     "dev": "next dev",
     "build": "next build",
     "lint": "next lint",
