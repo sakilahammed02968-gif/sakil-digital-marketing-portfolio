@@ -2,9 +2,10 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { getDemoLogin, isDemoMode } from "@/lib/demo";
 
 const credentialsSchema = z.object({ email: z.string().email(), password: z.string().min(6) });
+
 export const authOptions: NextAuthOptions = {
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
@@ -14,6 +15,12 @@ export const authOptions: NextAuthOptions = {
     async authorize(credentials) {
       const parsed = credentialsSchema.safeParse(credentials);
       if (!parsed.success) return null;
+
+      if (isDemoMode) {
+        return getDemoLogin(parsed.data.email, parsed.data.password) as never;
+      }
+
+      const { prisma } = await import("@/lib/prisma");
       const user = await prisma.user.findUnique({ where: { email: parsed.data.email } });
       if (!user?.isActive) return null;
       const valid = await bcrypt.compare(parsed.data.password, user.passwordHash);
